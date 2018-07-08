@@ -1,0 +1,102 @@
+swagger: "2.0"
+info:
+  version: "0.0.1"
+  title: API API
+host: localhost:80
+basePath: /v1/oas
+#
+schemes:
+  - http
+  - https
+securityDefinitions:
+  Bearer:
+    type: apiKey
+    name: Authorization
+    in: header
+consumes:
+  - application/json
+  - multipart/form-data
+produces:
+  - application/json
+paths:
+  /api:
+    x-swagger-router-controller: api
+    get:
+      security:
+        - Bearer: []
+      description: Returns an array of APIs
+      tags:
+        - API
+      operationId: apiFind
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          description: ''
+          type: string
+        - name: page
+          in: query
+          required: false
+          description: ''
+          type: integer
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Api"
+        "403":
+          description: "Access Denied"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /api/{id}:
+    x-swagger-router-controller: api
+    get:
+      security:
+        - Bearer: []
+      description: Returns one API
+      tags:
+        - API
+      operationId: apiGet
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ''
+          type: string
+        - name: uri
+          in: query
+          required: false
+          description: ''
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Api"
+        "403":
+          description: "Access Denied"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /swagger:
+    x-swagger-pipe: swagger_raw
+definitions:
+  Api:
+    properties:
+      id:
+        type: string
+  ErrorResponse:
+    required:
+      - message
+    properties:
+      message:
+        type: string

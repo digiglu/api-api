@@ -1,0 +1,32 @@
+{
+  "name": "oas-api",
+  "version": "0.0.1",
+  "private": true,
+  "description": "Open API Specification API",
+  "keywords": [],
+  "author": "Dirk Rejahl",
+  "license": "",
+  "main": "app.js",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "cors": "^2.8.4",
+    "express": "^4.12.3",
+    "express-jwt": "^5.3.0",
+    "jwks-rsa": "^1.2.0",
+    "mongodb": "^3.0.1",
+    "ramda": "^0.25.0",
+    "swagger-parser": "^5.0.0",
+    "swagger-tools": "^0.10.1",
+    "uuid": "^3.1.0",
+    "winston": "^3.0.0-rc5",
+    "yamljs": "^0.3.0"
+  },
+  "devDependencies": {
+    "should": "^7.1.0",
+    "supertest": "^1.0.0"
+  },
+  "scripts": {
+    "start": "node app.js",
+    "test": "swagger project test"
+  }
+}
