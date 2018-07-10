@@ -19,6 +19,72 @@ consumes:
 produces:
   - application/json
 paths:
+  /collection:
+    x-swagger-router-controller: collection
+    post:
+      security:
+        - Bearer: []
+      description: Creates a new collection
+      tags:
+        - collection
+      operationId: collectionCreate
+      parameters:
+        - name: collection
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/Collection"
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: "#/definitions/Collection"
+        "403":
+          description: "Access Denied"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+    get:
+      security:
+        - Bearer: []
+      description: Returns an array of API collection
+      tags:
+        - Collection
+      operationId: collectionFind
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          description: ''
+          type: string
+        - name: page
+          in: query
+          required: false
+          description: ''
+          type: integer
+        - name: refId
+          in: query
+          required: true
+          description: ''
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Collection"
+        "403":
+          description: "Access Denied"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
   /api:
     x-swagger-router-controller: api
     get:
@@ -90,6 +156,10 @@ paths:
   /swagger:
     x-swagger-pipe: swagger_raw
 definitions:
+  Collection:
+    properties:
+      id:
+        type: string
   Api:
     properties:
       id:
