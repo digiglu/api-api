@@ -109,6 +109,7 @@ function collectionFind(req, res) {
     collection.find({refId: refId},
       mongoUtils.fieldFilter(req.swagger.params.fields.value)).toArray(function(err, docs) {
         if (err!=null) {
+          logger.warn("collectionFind: DB connection failed", {mongoString: process.env.MONGO_STRING});
           res.status(500).send({ error: err });
           return;
         }
