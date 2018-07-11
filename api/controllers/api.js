@@ -49,6 +49,11 @@ function apiGet(req, res) {
 
   SwaggerParser.parse(apiURI)
   .then(function(api) {
+
+    //console.log("SPEC", JSON.stringify(api))
+
+    doc.info = api.info;
+
     // paths
     var pathArray = (R.compose(R.map(R.zipObj(['path', 'verbs'])), R.toPairs)(R.path(["paths"], api)))
     pathArray.forEach( p => {
