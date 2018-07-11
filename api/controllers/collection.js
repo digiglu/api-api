@@ -84,7 +84,7 @@ function collectionFind(req, res) {
 
   MongoClient.connect(mongourl, function(err, client) {
     if (err!=null) {
-      logger.warn("collectionFind: DB connection failed", {mongoString: process.env.MONGO_STRING});
+      logger.warn("collectionFind: DB connection failed", {mongoString: process.env.MONGO_STRING, dbname: dbname, error: err});
       res.status(500).send({ error: err });
       return;
     }
