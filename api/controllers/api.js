@@ -53,6 +53,9 @@ function apiGet(req, res) {
     //console.log("SPEC", JSON.stringify(api))
 
     doc.info = api.info;
+    doc.host = api.host;
+    doc.basePath = api.basePath;
+    doc.spec = api;
 
     // paths
     var pathArray = (R.compose(R.map(R.zipObj(['path', 'verbs'])), R.toPairs)(R.path(["paths"], api)))
