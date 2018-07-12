@@ -153,6 +153,74 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+  /schema:
+    x-swagger-router-controller: schema
+    get:
+      security:
+        - Bearer: []
+      description: Returns an array of Schemas
+      tags:
+        - Schema
+      operationId: schemaFind
+      parameters:
+        - name: fields
+          in: query
+          required: false
+          description: ''
+          type: string
+        - name: page
+          in: query
+          required: false
+          description: ''
+          type: integer
+      responses:
+        "200":
+          description: Success
+          schema:
+            type: array
+            items:
+              $ref: "#/definitions/Schema"
+        "403":
+          description: "Access Denied"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /schema/{id}:
+    x-swagger-router-controller: schema
+    get:
+      security:
+        - Bearer: []
+      description: Returns one Schema
+      tags:
+        - Schema
+      operationId: schemaGet
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ''
+          type: string
+        - name: uri
+          in: query
+          required: false
+          description: ''
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Schema"
+        "403":
+          description: "Access Denied"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
   /swagger:
     x-swagger-pipe: swagger_raw
 definitions:
@@ -161,6 +229,10 @@ definitions:
       id:
         type: string
   Api:
+    properties:
+      id:
+        type: string
+  Schema:
     properties:
       id:
         type: string
