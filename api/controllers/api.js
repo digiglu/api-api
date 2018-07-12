@@ -58,15 +58,30 @@ function apiGet(req, res) {
     doc.spec = api;
 
     // paths
+    doc.verbs = [];
     var pathArray = (R.compose(R.map(R.zipObj(['path', 'verbs'])), R.toPairs)(R.path(["paths"], api)))
     pathArray.forEach( p => {
       var path = {
         "name": p.path
       }
       var verbArray = (R.compose(R.map(R.zipObj(['name', 'details'])), R.toPairs)(R.path(["verbs"], p)));
+      verbArray.forEach( v => {
+        v.path = path.name;
+        doc.verbs.push(v);
+      })
       path.verbs = verbArray.filter( v => { return (v.name==='get'||v.name==='post'||v.name==='patch'||v.name==='put'||v.name==='delete')})
       doc.paths.push(path);
     });
+
+    // togs [HACK]
+    var tags=[];
+    doc.verbs.forEach( v => {
+      if (R.path(["details", "tags"])) {
+        tags = tags.concat(R.path(["details", "tags"], v));
+      }
+    });
+    doc.tags = R.uniq(tags);
+
     res.json( doc );
   }).catch( err => {
     console.error("ERROR:", err)
