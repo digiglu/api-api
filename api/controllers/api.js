@@ -69,7 +69,19 @@ function apiGet(req, res) {
         v.path = path.name;
         doc.verbs.push(v);
       })
-      path.verbs = verbArray.filter( v => { return (v.name==='get'||v.name==='post'||v.name==='patch'||v.name==='put'||v.name==='delete')})
+      path.verbs = [];
+
+      verbArray.forEach( v => {
+        if (v.name==='get'||v.name==='post'||v.name==='patch'||v.name==='put'||v.name==='delete') {
+
+          v.details.responses = (R.compose(R.map(R.zipObj(['code', 'details'])), R.toPairs)(R.path(["responses"], v.details)));
+
+          path.verbs.push(v);
+        }
+      });
+
+
+
       doc.paths.push(path);
     });
 
