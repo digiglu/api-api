@@ -196,7 +196,7 @@ paths:
       description: Returns one Schema
       tags:
         - Schema
-      operationId: schemaGet
+      operationId: schemaGetByUri
       parameters:
         - name: id
           in: path
@@ -205,7 +205,40 @@ paths:
           type: string
         - name: uri
           in: query
-          required: false
+          required: true
+          description: ''
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Schema"
+        "403":
+          description: "Access Denied"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+  /schema/{id}/{version}:
+    x-swagger-router-controller: schema
+    get:
+      security:
+        - Bearer: []
+      description: Returns one Schema
+      tags:
+        - Schema
+      operationId: schemaGet
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ''
+          type: string
+        - name: version
+          in: path
+          required: true
           description: ''
           type: string
       responses:

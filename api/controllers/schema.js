@@ -35,6 +35,7 @@ const dbname = process.env.MONGO_DB_NAME;
 
 module.exports = {
   schemaGet,
+  schemaGetByUri,
   schemaFind
 };
 
@@ -43,6 +44,25 @@ function schemaFind(req, res) {
 }
 
 function schemaGet(req, res) {
+  var id = req.swagger.params.id.value;
+  var version  = req.swagger.params.version.value;
+
+  var schemaURI = `https://i-glu.digiglu.io/api/schemas/digiglu/${id}/jsonschema/${version}`;
+
+  axios.get(schemaURI)
+  .then( response => {
+    delete response.data['$schema'];
+    delete response.data['self'];
+    delete response.data['type'];
+    res.json( response.data );
+  })
+  .catch( err => {
+    logger.warn("Schema not found", {uri: schemaURI, error: err})
+    res.status(404).send();
+  })
+}
+
+function schemaGetByUri(req, res) {
   var schemaURI = req.swagger.params.uri.value;
 
   axios.get(schemaURI)
