@@ -53,7 +53,6 @@ function schemaGet(req, res) {
   .then( response => {
     delete response.data['$schema'];
     delete response.data['self'];
-    delete response.data['type'];
     res.json( response.data );
   })
   .catch( err => {
