@@ -48,7 +48,7 @@ function apiGet(req, res) {
   };
 
   SwaggerParser.parse(apiURI)
-  .then(function(api) {
+  .then( api => {
 
     //console.log("SPEC", JSON.stringify(api))
 
@@ -57,44 +57,50 @@ function apiGet(req, res) {
     doc.basePath = api.basePath;
     doc.spec = api;
 
-    // paths
-    doc.verbs = [];
-    var pathArray = (R.compose(R.map(R.zipObj(['path', 'verbs'])), R.toPairs)(R.path(["paths"], api)))
-    pathArray.forEach( p => {
-      var path = {
-        "name": p.path
-      }
-      var verbArray = (R.compose(R.map(R.zipObj(['name', 'details'])), R.toPairs)(R.path(["verbs"], p)));
-      verbArray.forEach( v => {
-        v.path = path.name;
-        doc.verbs.push(v);
-      })
-      path.verbs = [];
+    SwaggerParser.resolve(apiURI)
+    .then( $refs => {
+      doc.references = $refs.values();
 
-      verbArray.forEach( v => {
-        if (v.name==='get'||v.name==='post'||v.name==='patch'||v.name==='put'||v.name==='delete') {
-
-          v.details.responses = (R.compose(R.map(R.zipObj(['code', 'details'])), R.toPairs)(R.path(["responses"], v.details)));
-
-          path.verbs.push(v);
+      // paths
+      doc.verbs = [];
+      var pathArray = (R.compose(R.map(R.zipObj(['path', 'verbs'])), R.toPairs)(R.path(["paths"], api)))
+      pathArray.forEach( p => {
+        var path = {
+          "name": p.path
         }
+        var verbArray = (R.compose(R.map(R.zipObj(['name', 'details'])), R.toPairs)(R.path(["verbs"], p)));
+        verbArray.forEach( v => {
+          v.path = path.name;
+          doc.verbs.push(v);
+        })
+        path.verbs = [];
+
+        verbArray.forEach( v => {
+          if (v.name==='get'||v.name==='post'||v.name==='patch'||v.name==='put'||v.name==='delete') {
+
+            v.details.responses = (R.compose(R.map(R.zipObj(['code', 'details'])), R.toPairs)(R.path(["responses"], v.details)));
+
+            path.verbs.push(v);
+          }
+        });
+
+        doc.paths.push(path);
       });
 
+      // togs [HACK]
+      var tags=[];
+      doc.verbs.forEach( v => {
+        if (R.path(["details", "tags"])) {
+          tags = tags.concat(R.path(["details", "tags"], v));
+        }
+      });
+      doc.tags = R.uniq(tags);
 
-
-      doc.paths.push(path);
+      res.json( doc );
+    }).catch( err => {
+      console.error("ERROR:", err)
+      res.json( err )
     });
-
-    // togs [HACK]
-    var tags=[];
-    doc.verbs.forEach( v => {
-      if (R.path(["details", "tags"])) {
-        tags = tags.concat(R.path(["details", "tags"], v));
-      }
-    });
-    doc.tags = R.uniq(tags);
-
-    res.json( doc );
   }).catch( err => {
     console.error("ERROR:", err)
     res.json( err )
