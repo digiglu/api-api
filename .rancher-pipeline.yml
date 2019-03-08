@@ -1,0 +1,7 @@
+stages:
+- name: Run
+  steps:
+  - runScriptConfig:
+      image: node:latest
+      shellScript: node app.js
+timeout: 60
