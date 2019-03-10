@@ -1,7 +1,8 @@
 stages:
-- name: Run
+- name: Build
   steps:
-  - runScriptConfig:
-      image: node:latest
-      shellScript: node app.js
+  - publishImageConfig:
+      dockerfilePath: ./Dockerfile
+      buildContext: .
+      tag: api-api
 timeout: 60
