@@ -1,0 +1,48 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: oas-api
+  namespace: apiglu-dev
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: oas-api
+    spec:
+      containers:
+      - env:
+        - name: SRV_PORT
+          valueFrom:
+            configMapKeyRef:
+              key: SRV_PORT
+              name: apiglu-config-dev
+        - name: DB_NAME
+          valueFrom:
+            configMapKeyRef:
+              key: DB_NAME
+              name: apiglu-config-dev
+        - name: MONGO_STRING
+          valueFrom:
+            configMapKeyRef:
+              key: MONGO_STRING
+              name: apiglu-config-dev
+        name: oas-api
+        image: ${CICD_IMAGE}:${CICD_EXECUTION_SEQUENCE}
+        ports:
+          - containerPort: 80
+      imagePullSecrets:
+      - name: pipeline-docker-registry
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: oas-api
+  namespace: apiglu-dev
+spec:
+  type: NodePort
+  selector:
+    app: oas-api
+  ports:
+  - protocol: TCP
+    port: 80

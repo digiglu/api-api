@@ -1,0 +1,13 @@
+stages:
+- name: Build
+  steps:
+  - publishImageConfig:
+      dockerfilePath: ./Dockerfile
+      buildContext: .
+      tag: oas-api:${CICD_EXECUTION_SEQUENCE}
+      registry: 127.0.0.1:34035
+- name: Deploy
+  steps:
+  - applyYamlConfig:
+      path: ./deployment-dev.yaml
+timeout: 60
