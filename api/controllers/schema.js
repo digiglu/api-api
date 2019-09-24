@@ -1,5 +1,6 @@
 'use strict';
 var config = require('./config.json')
+const uuidv1 = require('uuid/v1');
 
 // LOGGING with WinstonJS
 const winston = require('winston');
