@@ -90,6 +90,7 @@ function schemaFind(req, res) {
 
 function schemaGet(req, res) {
   var refId = req.swagger.params.refId.value;
+  logger.info("schemaGet", {refId})
 
   MongoClient.connect(mongourl, function(err, client) {
     if (err!=null) {
@@ -128,6 +129,7 @@ function schemaGet(req, res) {
 
         const totalsize = docs.length
 
+        logger.info("getSchema", {size: docs.length})
         // slice page
         docs = docs.slice( firstitem, lastitem )
 
