@@ -84,13 +84,13 @@ MongoClient.connect(mongourl, function(err, client) {
   res.json( generateHalDoc( schema, self ));
 }
 
-function schemaFind(req, res) {
+function schemaGet(req, res) {
   res.json( [] )
 }
 
-function schemaGet(req, res) {
+function schemaFind(req, res) {
   var refId = req.swagger.params.refId.value;
-  logger.info("schemaGet", {refId})
+  logger.info("schemaFind", {refId})
 
   MongoClient.connect(mongourl, function(err, client) {
     if (err!=null) {
@@ -129,7 +129,7 @@ function schemaGet(req, res) {
 
         const totalsize = docs.length
 
-        logger.info("getSchema", {size: docs.length})
+        logger.info("schemaFind", {size: docs.length})
         // slice page
         docs = docs.slice( firstitem, lastitem )
 
