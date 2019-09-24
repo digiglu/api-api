@@ -295,7 +295,7 @@ definitions:
     properties:
       id:
         type: string
-  Schema:
+  SchemaRef:
     properties:
       id:
         type: string
