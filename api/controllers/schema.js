@@ -89,6 +89,93 @@ function schemaFind(req, res) {
 }
 
 function schemaGet(req, res) {
+  var refId = req.swagger.params.refId.value;
+
+  MongoClient.connect(mongourl, function(err, client) {
+    if (err!=null) {
+      logger.warn("collectionFind: DB connection failed", {mongoString: process.env.MONGO_STRING, dbname: dbname, error: err});
+      res.status(500).send({ error: err });
+      return;
+    }
+    const db = client.db(dbname);
+
+    var pageno = req.swagger.params.page.value ? parseInt(req.swagger.params.page.value) : 1;
+
+    // Fixed page size for now
+
+    const pagesize = 15
+
+    const firstitem = (pageno-1)*pagesize
+    const lastitem = firstitem + pagesize
+
+    let baseUrl = req.url;
+
+    if (req.url.indexOf("?")>1) {
+      baseUrl = req.url.slice( 0, req.url.indexOf("?") );
+    }
+
+    var collection = db.collection('schema');
+    // Find some documents
+    collection.find({refId: refId},
+      mongoUtils.fieldFilter(req.swagger.params.fields.value)).toArray(function(err, docs) {
+        if (err!=null) {
+          logger.warn("collectionFind: DB connection failed", {mongoString: process.env.MONGO_STRING});
+          res.status(500).send({ error: err });
+          return;
+        }
+
+        client.close();
+
+        const totalsize = docs.length
+
+        // slice page
+        docs = docs.slice( firstitem, lastitem )
+
+        // Generate experiment doc
+        docs.forEach( function( item ) {
+          item = generateHalDoc( item, baseUrl.concat( "/" ).concat( item.id ) )
+        })
+
+        // create HAL response
+        var halresp = {};
+        halresp._links = {
+            self: { href: req.url },
+            item: []
+        }
+        halresp._embedded = {item: []}
+        halresp._embedded.item = docs
+
+        // Add array of links
+        docs.forEach( function( item ) {
+            halresp._links.item.push( {
+                  href: baseUrl.concat( "/" ).concat( item.id )
+                } )
+        });
+
+        // Pagination attributes
+        halresp.page = pageno
+        halresp.totalrecords = totalsize
+        halresp.pagesize = pagesize
+        halresp.totalpages = Math.ceil(totalsize/pagesize)
+
+        // Create pagination links
+        if ( totalsize > (pageno * pagesize) ) {
+          halresp._links.next = { href: baseUrl.concat("?page=").concat(pageno+1)}
+        }
+
+        halresp._links.first = { href: baseUrl.concat("?page=1")};
+        if ( pageno > 1 ) {
+          halresp._links.previous = { href: baseUrl.concat("?page=").concat(pageno-1)}
+        }
+
+        halresp._links.last = { href: baseUrl.concat("?page=").concat(Math.ceil(totalsize/pagesize)) };
+
+        res.json( halresp );
+      });
+  });
+}
+
+function schemaIgluGet(req, res) {
   var id = req.swagger.params.id.value;
   var version  = req.swagger.params.version.value;
 
