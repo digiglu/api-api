@@ -155,6 +155,32 @@ paths:
             $ref: "#/definitions/ErrorResponse"
   /schema:
     x-swagger-router-controller: schema
+    post:
+      security:
+        - Bearer: []
+      description: Creates a new schema
+      tags:
+        - schema
+      operationId: schemaCreate
+      parameters:
+        - name: schema
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/SchemaRef"
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: "#/definitions/SchemaRef"
+        "403":
+          description: "Access Denied"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
     get:
       security:
         - Bearer: []
@@ -262,6 +288,10 @@ definitions:
       id:
         type: string
   Api:
+    properties:
+      id:
+        type: string
+  Schema:
     properties:
       id:
         type: string

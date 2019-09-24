@@ -34,10 +34,54 @@ const mongourl = process.env.MONGO_STRING;
 const dbname = process.env.MONGO_DB_NAME;
 
 module.exports = {
+  schemaCreate,
   schemaGet,
   schemaGetByUri,
   schemaFind
 };
+
+function schemaCreate(req, res) {
+var schema = req.swagger.params.schema.value;
+
+schema.id = uuidv1();
+schema.status = "Draft";
+schema.owner = req.user.sub;
+schema.created = Date.now();
+schema.modified = Date.now();
+schema.userName = req.user["https://experimenz.com/name"];
+
+let baseUrl = req.url;
+
+if (req.url.indexOf("?")>1) {
+  baseUrl = req.url.slice( 0, req.url.indexOf("?") );
+}
+var self = baseUrl + "/" + schema.id;
+
+var mongoDoc = Object.assign( {}, schema );
+
+// Use connect method to connect to the server
+MongoClient.connect(mongourl, function(err, client) {
+  if (err!=null) {
+    res.status(500).send({ error: err });
+    return;
+  }
+  const db = client.db(dbname);
+
+  // Get the documents collection
+  var collection = db.collection('schema');
+  // Insert some documents
+  collection.insert( mongoDoc, function(err, result) {
+    if (err!=null) {
+      res.status(500).send({ error: err });
+      return;
+    }
+
+    client.close();
+
+    });
+  });
+  res.json( generateHalDoc( schema, self ));
+}
 
 function schemaFind(req, res) {
   res.json( [] )
