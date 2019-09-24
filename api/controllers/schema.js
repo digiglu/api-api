@@ -116,7 +116,7 @@ function schemaGet(req, res) {
 
     var collection = db.collection('schema');
     // Find some documents
-    collection.find({refId: refId},
+    collection.find({experimentId: refId},
       mongoUtils.fieldFilter(req.swagger.params.fields.value)).toArray(function(err, docs) {
         if (err!=null) {
           logger.warn("collectionFind: DB connection failed", {mongoString: process.env.MONGO_STRING});
