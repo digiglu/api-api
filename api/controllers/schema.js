@@ -19,7 +19,7 @@ var SwaggerParser = require('swagger-parser');
 var R = require('ramda');
 
 const axios = require('axios');
-axios.defaults.headers.common['apikey'] = config.iglu_api_read_key;
+axios.defaults.headers.common['apikey'] = config.iglu_api_write_key;
 
 const uuidv4 = require('uuid/v4');
 var mongoUtils = require('../utilities/mongoUtils')
@@ -35,6 +35,8 @@ const mongourl = process.env.MONGO_STRING;
 const dbname = process.env.MONGO_DB_NAME;
 
 module.exports = {
+  schemaIgluCreate,
+  schemaIgluGet,
   schemaCreate,
   schemaGet,
   schemaGetByUri,
@@ -181,7 +183,7 @@ function schemaIgluGet(req, res) {
   var id = req.swagger.params.id.value;
   var version  = req.swagger.params.version.value;
 
-  var schemaURI = `https://i-glu.digiglu.io/api/schemas/digiglu/${id}/jsonschema/${version}`;
+  var schemaURI = `https://i-glu.digiglu.io/api/schemas/apiglu/${id}/jsonschema/${version}`;
 
   axios.get(schemaURI)
   .then( response => {
@@ -191,6 +193,25 @@ function schemaIgluGet(req, res) {
   })
   .catch( err => {
     logger.warn("Schema not found", {uri: schemaURI, error: err})
+    res.status(404).send();
+  })
+}
+
+function schemaIgluCreate(req, res) {
+  var id = req.swagger.params.id.value;
+  var version  = req.swagger.params.version.value;
+  var schema = req.swagger.params.schema.value;
+
+  var schemaURI = `https://i-glu.digiglu.io/api/schemas/apiglu/${id}/jsonschema/${version}`;
+
+  axios.post(schemaURI, schema)
+  .then( response => {
+    delete response.data['$schema'];
+    delete response.data['self'];
+    res.json( response.data );
+  })
+  .catch( err => {
+    logger.warn("Schema creation failed", {uri: schemaURI, error: err})
     res.status(404).send();
   })
 }
