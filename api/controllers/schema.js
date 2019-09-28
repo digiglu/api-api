@@ -202,6 +202,14 @@ function schemaIgluCreate(req, res) {
   var version  = req.swagger.params.version.value;
   var schema = req.swagger.params.schema.value;
 
+  schema["$schema"] = "http://json-schema.org/schema#"
+	schema.self = {
+		"vendor": "apiglu",
+		"name": id,
+		"format": "jsonschema",
+		"version": version
+	}
+
   var schemaURI = `https://i-glu.digiglu.io/api/schemas/apiglu/${id}/jsonschema/${version}`;
 
   axios.post(schemaURI, schema)
