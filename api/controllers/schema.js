@@ -210,6 +210,8 @@ function schemaIgluCreate(req, res) {
 		"version": version
 	}
 
+  logger.info("schemaIgluCreate", {schema})
+
   var schemaURI = `https://i-glu.digiglu.io/api/schemas/apiglu/${id}/jsonschema/${version}`;
 
   axios.post(schemaURI, schema)
