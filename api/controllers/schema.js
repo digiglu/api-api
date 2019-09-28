@@ -202,7 +202,7 @@ function schemaIgluCreate(req, res) {
   var version  = req.swagger.params.version.value;
   var schema = req.swagger.params.schema.value;
 
-  schema["$schema"] = "http://json-schema.org/schema#"
+  schema["$schema"] = "http://iglucentral.com/schemas/com.snowplowanalytics.self-desc/schema/jsonschema/1-0-0#"
 	schema.self = {
 		"vendor": "apiglu",
 		"name": id,
