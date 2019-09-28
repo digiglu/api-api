@@ -296,8 +296,8 @@ paths:
         - name: schema
           in: body
           required: true
-          description: ''
-          type: string
+          schema:
+            $ref: "#/definitions/Schema"
         - name: id
           in: path
           required: true
