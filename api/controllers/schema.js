@@ -221,8 +221,8 @@ function schemaIgluCreate(req, res) {
     res.json( response.data );
   })
   .catch( err => {
-    logger.warn("Schema creation failed", {uri: schemaURI, error: err})
-    res.status(404).send();
+    logger.warn("Schema creation failed", {uri: schemaURI, error: err.message, status: err.status})
+    res.status(500).send();
   })
 }
 
