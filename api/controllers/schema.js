@@ -39,7 +39,7 @@ module.exports = {
   schemaIgluGet,
   schemaCreate,
   schemaGet,
-  schemaGetByUri,
+  schemaGetById,
   schemaFind
 };
 
@@ -226,17 +226,61 @@ function schemaIgluCreate(req, res) {
   })
 }
 
-function schemaGetByUri(req, res) {
-  var schemaURI = req.swagger.params.uri.value;
+function schemaGetById(req, res) {
+  // Use connect method to connect to the server
+  MongoClient.connect(mongourl, function(err, client) {
+    var schemaId = req.swagger.params.id.value;
 
-  axios.get(schemaURI)
-  .then( response => {
-    res.json( response.data );
-  })
-  .catch( err => {
-    logger.warn("Schema not found", {uri: schemaURI, error: err})
-    res.status(404).send();
-  })
+    if (err!=null) {
+      res.status(500).send({ error: err });
+      return;
+    }
+
+    const db = client.db(dbname);
+    var collection = db.collection('schema');
+    const query = { id: schemaId }
+
+    // Find one document
+    collection.findOne( query,
+      mongoUtils.fieldFilter(), function(err, schema) {
+        if (err!=null) {
+          logger.warn("schemaGetById: DB error", {user: req.user.sub, id: schemaId })
+          res.status(500).send({ error: err });
+          return;
+        }
+      client.close();
+
+      // Fetch schema from iglu repository
+      axios.get(schema.url)
+      .then( response => {
+        delete response.data['$schema'];
+        delete response.data['self'];
+        schema.schema = response.data
+
+        // Base class schemas
+        schema.baseSchema = []
+        schema.reference = []
+        if (schema.schema.allOf) {
+          schema.schema.allOf.forEach( b => { schema.baseSchema.push(b["$ref"])})
+        }
+        // Find references [FIX-ME] - Quick and Dirty Hack
+        if (schema.schema.properties) {
+          for (var prop in schema.schema.properties) {
+            if (Object.prototype.hasOwnProperty.call(schema.schema.properties, prop)) {
+                if (schema.schema.properties[prop].items["$ref"]) {
+                    schema.reference.push(schema.schema.properties[prop].items["$ref"])
+                }
+            }
+          }
+        }
+        res.json( generateHalDoc( schema, req.url ) )
+      })
+      .catch( err => {
+        logger.warn("schemaGetById: Schema not found", {uri: schema.url, error: err})
+        res.status(404).send();
+      })
+    });
+  });
 }
 
 function generateHalDoc( doc, url ) {

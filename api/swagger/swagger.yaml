@@ -227,7 +227,7 @@ paths:
       description: Returns one Schema
       tags:
         - Schema
-      operationId: schemaGetByUri
+      operationId: schemaGetById
       parameters:
         - name: id
           in: path
