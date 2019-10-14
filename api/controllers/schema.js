@@ -267,7 +267,7 @@ function schemaGetById(req, res) {
         if (schema.schema.properties) {
           for (var prop in schema.schema.properties) {
             if (Object.prototype.hasOwnProperty.call(schema.schema.properties, prop)) {
-                if (schema.schema.properties[prop].items["$ref"]) {
+                if (schema.schema.properties[prop].items && schema.schema.properties[prop].items["$ref"]) {
                     schema.reference.push(schema.schema.properties[prop].items["$ref"])
                 }
             }
