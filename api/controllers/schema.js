@@ -106,7 +106,7 @@ function schemaFind(req, res) {
 
     // Fixed page size for now
 
-    const pagesize = 15
+    const pagesize = 1000
 
     const firstitem = (pageno-1)*pagesize
     const lastitem = firstitem + pagesize
