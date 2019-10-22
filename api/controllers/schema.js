@@ -40,8 +40,16 @@ module.exports = {
   schemaCreate,
   schemaGet,
   schemaGetById,
-  schemaFind
+  schemaFind,
+  schemaDiff
 };
+function schemaDiff(req, res) {
+  var srcId = req.swagger.params.srcId.value;
+  var trgId = req.swagger.params.trgId.value;
+  
+  logger.info(`schemaDiff: ${srcId} <-> ${trgId}`)
+  res.json( {} );
+  }
 
 function schemaCreate(req, res) {
 var schema = req.swagger.params.schema.value;

@@ -252,6 +252,39 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+  /schema/{srcId}/diff/{trgId}:
+    x-swagger-router-controller: schema
+    get:
+      security:
+        - Bearer: []
+      description: Diffs two Schemas
+      tags:
+        - Schema
+      operationId: schemaDiff
+      parameters:
+        - name: srcId
+          in: path
+          required: true
+          description: ''
+          type: string
+        - name: trgId
+          in: path
+          required: true
+          description: ''
+          type: string
+      responses:
+        "200":
+          description: Success
+          schema:
+            $ref: "#/definitions/Schema"
+        "403":
+          description: "Access Denied"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
   /schema/iglu/{id}/{version}:
     x-swagger-router-controller: schema
     get:
