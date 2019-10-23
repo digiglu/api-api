@@ -35,8 +35,38 @@ const dbname = process.env.MONGO_DB_NAME;
 module.exports = {
   collectionGet,
   collectionFind,
-  collectionCreate
+  collectionCreate,
+  collectionApiCreate
 };
+
+function collectionApiCreate(req, res) {
+  var id = req.swagger.params.id.value;
+  var api = req.swagger.params.api.value;
+
+  api.id = uuidv4()
+  api.owner = req.user.sub;
+  api.created = Date.now();
+  api.modified = Date.now();
+
+  MongoClient.connect(mongourl, function(err, client) {
+    if (err!=null) {
+      res.status(500).send({ error: err });
+      return;
+    }
+    const db = client.db(dbname);
+    var collection = db.collection('apiCollection');
+
+    collection.update( {id}, {$push: {api}}, function(err, result) {
+      if (err!=null) {
+        res.status(500).send({ error: err });
+        return;
+      }
+
+      client.close();
+      res.json( api );
+    });
+  });
+}
 
 function collectionCreate(req, res) {
   var collection = req.swagger.params.collection.value;

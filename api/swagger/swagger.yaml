@@ -85,6 +85,39 @@ paths:
           description: Error
           schema:
             $ref: "#/definitions/ErrorResponse"
+  /collection/{id}/api:
+    x-swagger-router-controller: collection
+    post:
+      security:
+        - Bearer: []
+      description: Creates a api element for a collection
+      tags:
+        - collection
+      operationId: collectionApiCreate
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: ''
+          type: string
+        - name: api
+          in: body
+          required: true
+          schema:
+            $ref: "#/definitions/Collection"
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: "#/definitions/Collection"
+        "403":
+          description: "Access Denied"
+          schema:
+            $ref: "#/definitions/ErrorResponse"
+        default:
+          description: Error
+          schema:
+            $ref: "#/definitions/ErrorResponse"
   /api:
     x-swagger-router-controller: api
     get:
