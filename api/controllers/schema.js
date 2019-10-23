@@ -1,6 +1,7 @@
 'use strict';
 var config = require('./config.json')
 const uuidv1 = require('uuid/v1');
+const jsonSchemaDiff = require('json-schema-diff');
 
 // LOGGING with WinstonJS
 const winston = require('winston');
@@ -43,13 +44,39 @@ module.exports = {
   schemaFind,
   schemaDiff
 };
-function schemaDiff(req, res) {
+
+async function schemaDiff(req, res) {
   var srcId = req.swagger.params.srcId.value;
   var trgId = req.swagger.params.trgId.value;
   
   logger.info(`schemaDiff: ${srcId} <-> ${trgId}`)
-  res.json( {} );
-  }
+
+  MongoClient.connect(mongourl, {useNewUrlParser: true}, async function(err, client) {
+    if (err!=null) {
+      res.status(500).send({ error: err });
+      return;
+    }
+    var collection = client.db(dbname).collection('schema');
+    try {
+      // Get schema refs
+      const srcSchemaRef = await collection.findOne( {id: srcId} )
+      const trgSchemaRef = await collection.findOne( {id: trgId} )
+      // Get schema docs
+      const sourceSchema = await axios.get(srcSchemaRef.url)
+      const targetSchema = await axios.get(trgSchemaRef.url)
+      client.close();
+      jsonSchemaDiff.diffSchemas( {sourceSchema: sourceSchema.data, destinationSchema: targetSchema.data})
+      .then( result => {
+        console.log("R", result)
+        res.status(200).send( result );
+      })
+    } 
+    catch(err) {
+      logger.warn("schemaDiff: Error", err)
+      res.status(500).send(err)
+    }
+  })
+}
 
 function schemaCreate(req, res) {
 var schema = req.swagger.params.schema.value;
