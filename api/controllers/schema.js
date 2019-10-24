@@ -42,7 +42,8 @@ module.exports = {
   schemaGet,
   schemaGetById,
   schemaFind,
-  schemaDiff
+  schemaDiff,
+  schemaTransform
 };
 
 async function schemaDiff(req, res) {
@@ -78,8 +79,18 @@ async function schemaDiff(req, res) {
   })
 }
 
+function schemaTransform(req, res) {
+  var id = req.swagger.params.id.value;
+  var transformTask = req.swagger.params.transformTask.value;
+  
+  logger.info(`schemaTransform: ${id}`)
+
+  res.status(201).send( transformTask );
+}
+
 function schemaCreate(req, res) {
 var schema = req.swagger.params.schema.value;
+logger.info(`schemaCreate`)
 
 schema.id = uuidv1();
 schema.status = "Draft";

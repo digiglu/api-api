@@ -28,7 +28,6 @@ swaggerTools.initializeMiddleware(swaggerConfig, function(middleware) {
 
   app.use( cors() );
   app.use( authenticate.unless({method: 'GET'} ));
-
   app.use(middleware.swaggerMetadata());
 
   var routerConfig = {
